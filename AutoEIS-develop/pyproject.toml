@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autoeis"
+dynamic = ["version"]
+description = "A tool for automated EIS analysis by proposing statistically plausible ECMs."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Runze Zhang", email = "runzee.zhang@mail.utoronto.ca" },
+    { name = "Amin Sadeghi", email = "amin.sadeghi@live.com" },
+    { name = "Robert Black", email = "robert.black@nrc-cnrc.gc.ca" },
+    { name = "Jason Hattrick-Simpers", email = "jason.hattrick.simpers@utoronto.ca" },
+]
+maintainers = [
+  { name = "Amin Sadeghi", email = "amin.sadeghi@live.com" }
+]
+keywords = [
+    "bayesian inference",
+    "electrochemical impedance spectroscopy",
+    "equivalent circuit model",
+    "evolutionary algorithm",
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "arviz",
+    "click",
+    "dill",
+    "impedance",
+    "ipython",
+    "ipykernel",
+    "ipywidgets",
+    "jax",
+    "julia",
+    "juliacall",
+    "juliapkg",
+    "matplotlib",
+    "mpire[dill]",
+    "numpy",
+    "numpyro",
+    "pandas",
+    "psutil",
+    "pyparsing >= 3",
+    "rich",
+    "scikit-learn >= 1.4",
+    "seaborn",
+    "tqdm",
+]
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "nbmake",
+]
+doc = [
+    "furo",
+    "linkify-it-py",
+    "myst-parser",
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-autodoc2",
+]
+[project.urls]
+"Homepage" = "https://github.com/AUTODIAL/AutoEIS"
+"Bug Tracker" = "https://github.com/AUTODIAL/AutoEIS/issues"
+
+[tool.hatch.version]
+path = "autoeis/version.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/autoeis",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -v"
+testpaths = [
+    "tests",
+    "integration",
+]
