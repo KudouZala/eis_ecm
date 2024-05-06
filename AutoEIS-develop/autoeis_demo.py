@@ -164,7 +164,7 @@ def main():
     # Load impedance data (skip header row); Columns 1 -> 3: frequency, Re(Z), Im(Z)
     # 加载阻抗数据（跳过标题行）；第1 -> 3列：频率，Re(Z)，Im(Z)
     ASSETS = ae.io.get_assets_path()# 获取资源路径
-    fpath = os.path.join(ASSETS, "test_data.txt") # 拼接文件完整路径
+    fpath = os.path.join(ASSETS, "EIS_335th_cycled.txt") # 拼接文件完整路径
     # 加载文件，跳过第一行标题，只取第0、1、2列数据，分别对应频率、阻抗的实部和虚部
     freq, Zreal, Zimag = np.loadtxt(fpath, skiprows=1, unpack=True, usecols=(0, 1, 2))
     # Convert to complex impedance (the file contains -Im(Z) hence the minus sign)
@@ -186,7 +186,8 @@ def main():
     fig, ax = ae.visualization.plot_impedance_combo(Z, freq)
     #plt.show()
     """
-    在 plot_impedance_combo 函数中，图像是通过 matplotlib 创建的。如果你在一个标准的Python脚本中运行此函数，它不会自动显示图像。为了在脚本执行结束时看到图像，你需要调用 plt.show() 来启动事件循环，并且显示所有活跃的图像对象。
+    在 plot_impedance_combo 函数中，图像是通过 matplotlib 创建的。
+    如果你在一个标准的Python脚本中运行此函数，它不会自动显示图像。为了在脚本执行结束时看到图像，你需要调用 plt.show() 来启动事件循环，并且显示所有活跃的图像对象。
     如果你在Jupyter Notebook中运行这个函数，并且你的环境正确设置了 matplotlib 的inline后端，图像应该会自动显示在你运行代码的单元格下方。
     如果你在一个脚本或其他环境中运行此函数，请确保在函数调用之后添加 plt.show()，
     """
@@ -238,24 +239,24 @@ def main():
         # 设置遗传算法的参数
 
         kwargs = {
-            "iters": 25,# 迭代次数
-            "complexity": 25,# 电路复杂度
-            "population_size": 100,# 种群大小
-            "generations": 50,# 世代数
-            "tol": 1e-3,# 容忍度阈值
+            "iters": 2,# 迭代次数
+            "complexity": 10,# 电路复杂度
+            "population_size": 20,# 种群大小
+            "generations": 20,# 世代数
+            "tol": 1e-1,# 容忍度阈值
             "parallel":True# 是否并行计算#这里一定要注意写True，否则训练出的CSV，在后面读取的时候进行贝叶斯推理的时候会报错
         }
 
 
         # 生成候选电路
-        #circuits_unfiltered = ae.core.generate_equivalent_circuits(Z, freq, **kwargs)
+        circuits_unfiltered = ae.core.generate_equivalent_circuits(Z, freq, **kwargs)
         # Since generating circuits is expensive, let's save the results to a CSV file
         # 由于生成电路代价高昂，我们将结果保存到CSV文件中
-        #circuits_unfiltered.to_csv("circuits_unfiltered.csv", index=False)
+        circuits_unfiltered.to_csv("circuits_unfiltered.csv", index=False)
         # To load from file, uncomment the next 2 lines (line 2 is to convert str -> Python objects)
         # 若要从文件中加载，取消注释下面两行（第二行是将字符串转换成Python对象）
-        circuits_unfiltered = pd.read_csv("circuits_unfiltered.csv")
-        circuits_unfiltered["Parameters"] = circuits_unfiltered["Parameters"].apply(eval)
+        #circuits_unfiltered = pd.read_csv("circuits_unfiltered.csv")
+        #circuits_unfiltered["Parameters"] = circuits_unfiltered["Parameters"].apply(eval)
     # 显示未经过滤的电路
     #circuits_unfiltered
 
@@ -274,14 +275,14 @@ def main():
 
 
     # 调用AutoEIS核心模块的函数过滤不合理的电路，基于统计学的启发式规则
-    #circuits = ae.core.filter_implausible_circuits(circuits_unfiltered)
+    circuits = ae.core.filter_implausible_circuits(circuits_unfiltered)
     # Let's save the filtered circuits to a CSV file as well
     # 将过滤后的电路保存到CSV文件，以便之后使用
-    #circuits.to_csv("circuits_filtered.csv", index=False)
+    circuits.to_csv("circuits_filtered.csv", index=False)
     # To load from file, uncomment the next 2 lines (line 2 is to convert str -> Python objects)
     # 若要从文件加载过滤后的电路，取消注释下面两行（第二行是将字符串转换成Python对象）
-    circuits = pd.read_csv("circuits_filtered.csv")
-    circuits["Parameters"] = circuits["Parameters"].apply(eval)
+    #circuits = pd.read_csv("circuits_filtered.csv")
+    #circuits["Parameters"] = circuits["Parameters"].apply(eval)
     #circuits# 显示过滤后的电路列表
 
 
